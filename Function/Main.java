@@ -1,12 +1,11 @@
 package Function;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Main 
 {
-	private static LinkedList<User> users;
-	private static LinkedList<Restaurant> restaurants;
+	private static LinkedList<User> users = new LinkedList<User>();
+	private static LinkedList<Restaurant> restaurants = new LinkedList<Restaurant>();
 	private static User currentUser;
 	
 	public static void main(String[] args)
@@ -20,91 +19,94 @@ public class Main
 	// A Login Method
 	public static boolean verifyUser(String name, String pass)
 	{
-		long hash = currentUser.hashCode(pass);
-		for(User u : users)
-		{
-			if(u.getUsername().equals(name) && u.getPassword() == hash)
-				return true;
-		}
-		return false;
+		User user = currentUser.verifyUser(name, pass, users);
+		if(user == null)
+			return false;
+		else
+			currentUser = user;
+		return true;
+				
+	}
+	public static void logout()
+	{
+		currentUser = users.getFirst();
 	}
 	
-	// Search Methods to interact with the List
-	public static Restaurant[] searchName(String name)
+	public static Restaurant[] search(String term, int type)
 	{
-		ArrayList<Restaurant> results = new ArrayList<Restaurant>();
-		for(Restaurant r : restaurants)
-		{
-			if(r.getName().contains(name))
-				results.add(r);
-		}
-		return results.toArray(new Restaurant[results.size()]);
-	}
-	public static Restaurant[] searchRate(double rate)
-	{
-		double min = rate - 0.5;
-		double max = rate + 0.5;
-		ArrayList<Restaurant> results = new ArrayList<Restaurant>();
-		for(Restaurant r : restaurants)
-		{
-			if(r.getAvgRate() >= min && r.getAvgRate() <= max)
-				results.add(r);
-		}
-		return results.toArray(new Restaurant[results.size()]);
-	}
-	public static Restaurant[] searchPrice(double price)
-	{
-		double min = price - 0.5;
-		double max = price + 0.5;
-		ArrayList<Restaurant> results = new ArrayList<Restaurant>();
-		for(Restaurant r : restaurants)
-		{
-			if(r.getAvgPrice() >= min && r.getAvgPrice() <= max)
-				results.add(r);
-		}
-		return results.toArray(new Restaurant[results.size()]);
+		return currentUser.search(term, type, restaurants);
 	}
 	
 	// Data Mining
 	public static int retrPosNeg(Restaurant rest)
 	{
-		return rest.isPosNeg();
+		if(currentUser instanceof Admin)
+		{
+			return ((Admin)currentUser).mineReviewsPosNeg(rest);
+		}
+		return 0;
 	}
+	
+	/* To add later
 	public static Review[] findOutliers(Restaurant rest)
 	{
 		LinkedList<Review> reviews = rest.getReviews();
 		
 	}
+	*/
 	
 	// User Manipulation
 	public static void addUser(User user)
 	{
-		users.add(user);
+		currentUser.addUser(user, users);
+		currentUser = user;
 	}
 	public static void removeUser(User user)
 	{
-		users.remove(user);
+		if(currentUser instanceof Admin && !(currentUser.equals(user)))
+		{
+			((Admin)currentUser).removeUser(user, users);
+		}
 	}
 	
 	// Review Manipulation
-	public static void deleteReview(Review review)
+	public static boolean deleteReview(Review review)
 	{
-		Restaurant rest = review.getRestaurant();
-		rest.getReviews().remove(review);
+		if(currentUser instanceof Admin)
+		{
+			((Admin)currentUser).deleteReview(review);
+			return true;
+		}
+		return false;
 	}
-	public static void hideReview(Review review, boolean isHidden)
+	public static boolean hideReview(Review review, boolean isHidden)
 	{
-		review.hide(isHidden);
+		if(currentUser instanceof Admin)
+		{
+			((Admin)currentUser).hideReview(review, isHidden);
+			return true;
+		}
+		return false;
 	}
 	
 	// Restaurant Manipulation
-	public static void addRestaurant(Restaurant rest)
+	public static boolean addRestaurant(String name)
 	{
-		restaurants.add(rest);
+		if(currentUser instanceof Admin)
+		{
+			((Admin)currentUser).addRestaurant(name, restaurants);
+			return true;
+		}
+		return false;
 	}
-	public static void removeRestaurant(Restaurant rest)
+	public static boolean removeRestaurant(Restaurant rest)
 	{
-		users.remove(rest);
+		if(currentUser instanceof Admin)
+		{
+			((Admin)currentUser).removeRestaurant(rest, restaurants);
+			return true;
+		}
+		return false;
 	}
 	
 }

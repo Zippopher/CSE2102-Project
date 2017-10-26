@@ -25,7 +25,6 @@ public class Review
 		priceRating = pRate;
 		author = auth;
 		review = rev;
-		rest.addReview(this);
 	}
 	
 	// method to update hidden status

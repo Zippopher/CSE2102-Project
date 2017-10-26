@@ -5,11 +5,11 @@ import java.util.LinkedList;
 public class Restaurant 
 {
 	private String name;
-	private int isPosNeg; // -1(neg), 0(neut), 1(pos)
-	private double avgPrice;
-	private double avgRate;
+	private int isPosNeg = 0; // -1(neg), 0(neut), 1(pos)
+	private double avgPrice = 0;
+	private double avgRate = 0;
 	
-	private LinkedList<Review> reviews;
+	private LinkedList<Review> reviews = new LinkedList<Review>();
 	
 	// base constructor
 	public Restaurant()
@@ -36,6 +36,8 @@ public class Restaurant
 		
 		avgPrice = totPrice/reviews.size();
 		avgRate = totRate/reviews.size();
+		
+		isPosNeg();
 	}
 	
 	// delete a review at the behest of an admin

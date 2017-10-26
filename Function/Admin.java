@@ -1,5 +1,7 @@
 package Function;
 
+import java.util.LinkedList;
+
 public class Admin extends User
 {
 	// base constructor
@@ -35,38 +37,41 @@ public class Admin extends User
 	// delete unsavory reviews
 	public void deleteReview(Review review)
 	{
-		Main.deleteReview(review);
+		review.getRestaurant().getReviews().remove(review);
 	}
 	
 	// make a review visible/invisible pending review
-	public void hideReview(Review review)
+	public void hideReview(Review review, boolean isHidden)
 	{
-		Main.hideReview(review, true);
-	}
-	public void unhideReview(Review review)
-	{
-		Main.hideReview(review, false);
+		review.hide(isHidden);
 	}
 	
 	// add a new restaurant to the list
-	public void addRestarant(String name)
+	public void addRestaurant(String name, LinkedList<Restaurant> restaurants)
 	{
-		Main.addRestaurant(new Restaurant(name));
+		restaurants.add(new Restaurant(name));
 	}
 	
 	// remove a restaurant from the list
-	public void removeRestaurant(Restaurant rest)
+	public void removeRestaurant(Restaurant rest, LinkedList<Restaurant> restaurants)
 	{
-		Main.removeRestaurant(rest);
+		restaurants.remove(rest);
+	}
+	
+	public void removeUser(User u, LinkedList<User> users)
+	{
+		users.remove(u);
 	}
 	
 	// mine reviews for a given restaurant to find pos/neg or hints towards slander
 	public int mineReviewsPosNeg(Restaurant rest)
 	{
-		return Main.retrPosNeg(rest);
+		return rest.isPosNeg();
 	}
+	/*
 	public Review[] mineReviewsOutliers(Restaurant rest)
 	{
 		return Main.findOutliers(rest);
 	}
+	*/
 }
